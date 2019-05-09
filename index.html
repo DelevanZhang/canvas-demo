@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="./index.css">
+    <title>Document</title>
+
+</head>
+
+<body>
+
+    <!-- <div id="canvas"></div> -->
+    <canvas id="canvas">
+
+    </canvas>
+    <div id="action" class="actions">
+        <svg id=iconPen class="icon active" aria-hidden="true">
+            <use xlink:href="#icon-pen"></use>
+        </svg>
+        <svg id="iconEraser" class="icon" aria-hidden="true">
+            <use xlink:href="#icon-eraser"></use>
+        </svg>
+        <svg id="iconClear" class="icon" aria-hidden="true">
+            <use xlink:href="#icon-15qingkong-1"></use>
+        </svg>
+        <svg id="iconSave" class="icon" aria-hidden="true">
+            <use xlink:href="#icon-icons_save"></use>
+        </svg>
+        <!-- <button id="btn">橡皮檫</button>
+        <button id="brush">画笔</button> -->
+    </div>
+    <!-- 为画板添加颜色选择按钮 -->
+    <ul>
+        <li id="red" class="on"></li>
+        <li id="green"></li>
+        <li id="blue"></li>
+    </ul>
+    <!-- 为画板添加粗细按钮 -->
+    <ol>
+        <li id="thin" class="tin"></li>
+        <li id="thick" class="tic"></li>
+    </ol>
+    <!-- //添加画笔和橡皮檫的矢量图标 -->
+    <script src="https://at.alicdn.com/t/font_1175278_oaw6641i2s.js"></script>
+    <script>
+        // var div = document.getElementById('canvas');
+        // div.onmousedown = function (event){
+        //     // 
+        //     //拿到坐标点
+        //     var x = event['clientX'];
+        //     var y =event['clientY'];
+        //     console.log(x);
+        //     //创建一个div
+        //    var divPen = document.createElement('div');
+        //    divPen.style = "border: 6px solid black;"+"position:absolute;"+"left:"+(x-12)+"px"+";"+"top:"+(y-12)+"px"+";"+"border-radius: 3px"
+        //    div.appendChild(divPen);
+        // }
+        //获取当前文档的canvas
+        var cnavas = document.getElementById('canvas');
+        // var btn = document.getElementById('btn');
+        var iconPen = document.getElementById('iconPen');
+        var iconEraser = document.getElementById('iconEraser');
+        loadWindow();
+
+        var context = canvas.getContext('2d');
+        // context.strokestyle = color;
+        var using = false;//判断用户是否正在用画板
+        var point = {};//用来存连线的第一个点
+        var eraserEable = false;//判断用户是否开启橡皮檫
+        var color = 'red';//画笔的颜色；
+        var penWidth = 2;//画笔的粗细
+
+        //判断是否在pc端还是在移动端
+        //特性检测
+        if (document.body.ontouchstart !== undefined) {
+            //触屏设备
+            //开始触摸点
+            canvas.ontouchstart = function (touchEvent) {
+                using = true;
+                var x = touchEvent.touches[0].clientX;
+                var y = touchEvent.touches[0].clientY;
+                if (eraserEable) {
+                    context.clearRect(x, y, 20, 20);
+                } else {
+                    if (using) {
+                        point.x = x;//第一个点的x坐标
+                        point.y = y;
+                        //画线
+                        drawLine(x, y, point.x, point.y);
+                    }
+                }
+            }
+            //触摸移动
+            canvas.ontouchmove = function (touchEvent) {
+                var x = touchEvent.touches[0].clientX;
+                var y = touchEvent.touches[0].clientY;
+                if (eraserEable) {
+                    if (using) {
+                        context.clearRect(x, y, 20, 20);
+                    }
+
+                } else {
+                    if (using) {
+
+                        drawLine(point.x, point.y, x, y);
+                        point.x = x;//将当前的点存为下一次的起点
+                        point.y = y;
+                        // console.log(point);
+                    }
+                }
+            }
+            //触摸结束
+            canvas.ontouchend = function () {
+                using = false;
+            }
+        } else {
+            //PC设备
+            //鼠标按下监听
+            canvas.onmousedown = function (event) {
+                using = true;
+                var x = event.clientX;
+                var y = event.clientY;
+                if (eraserEable) {
+                    context.clearRect(x, y, 20, 20);
+                } else {
+                    if (using) {
+                        point.x = x;//第一个点的x坐标
+                        point.y = y;
+                        //画线
+                        drawLine(x, y, point.x, point.y);
+                    }
+                }
+
+
+
+
+            }
+
+            //鼠标滑动监听
+            canvas.onmousemove = function (event) {
+                // console.log(point+'1111111');
+                var x = event.clientX;
+                var y = event.clientY;
+                if (eraserEable) {
+                    if (using) {
+                        context.clearRect(x, y, 20, 20);
+                    }
+
+                } else {
+                    if (using) {
+
+                        drawLine(point.x, point.y, x, y);
+                        point.x = x;//将当前的点存为下一次的起点
+                        point.y = y;
+                        // console.log(point);
+                    }
+                }
+
+
+            }
+            //鼠标离开监听
+            canvas.onmouseup = function (event) {
+                using = false;
+
+            }
+        }
+        // var using = false;//判断用户是否正在用画板
+        // var point = {};//用来存连线的第一个点
+        // var eraserEable = false;//判断用户是否开启橡皮檫
+
+        //用户点击橡皮檫监听
+        // btn.onclick = function () {
+        //     eraserEable = true;
+        //     action.className = 'actions x'
+        // }
+        // brush.onclick = function () {
+        //     eraserEable = false;
+        //     action.className = 'actions'
+        // }
+        //用户点击画笔事件
+        iconPen.onclick = function () {
+            eraserEable = false;
+            iconPen.classList.add('active');
+            iconEraser.classList.remove('active');
+        }
+        iconEraser.onclick = function () {
+            eraserEable = true;
+            iconEraser.classList.add('active');
+            iconPen.classList.remove('active');
+        }
+        // 点击画笔颜色事件
+        red.onclick = function () {
+            color = 'red';
+            red.classList.add('on');
+            green.classList.remove('on');
+            blue.classList.remove('on');
+        }
+        green.onclick = function () {
+            color = 'green';
+            green.classList.add('on');
+            red.classList.remove('on');
+            blue.classList.remove('on');
+        }
+        blue.onclick = function () {
+            color = 'blue';
+            blue.classList.add('on');
+            red.classList.remove('on');
+            green.classList.remove('on');
+
+        }
+        //点击画笔粗细事件
+        thin.onclick = function () {
+            penWidth = 2;
+        }
+        thick.onclick = function () {
+            penWidth = 4;
+        }
+        //清屏
+        iconClear.onclick = function () {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        //下载
+        iconSave.onclick = function () {
+            var url = canvas.toDataURL('image/png')
+            var a =document.createElement('a');
+            document.body.appendChild(a);
+            a.href = url;
+            a.download = '画';
+            a.target = '_blank'
+            a.click();
+        }
+        //用户调整浏览器窗口监听
+        window.onresize = function (event) {//重新加载当前窗口
+            // console.log(event);
+            loadWindow();
+        }
+
+        function loadWindow() {
+            //获取用户当前屏幕尺寸 宽高
+            var pageWidth = document.documentElement.clientWidth;
+            var pageHeight = document.documentElement.clientHeight;
+            //将canvas铺满用户界面
+            canvas.width = pageWidth;
+            canvas.height = pageHeight;
+        }
+
+        //画线
+        function drawLine(x1, y1, x2, y2) {
+
+            context.beginPath();
+            context.moveTo(x1, y1);
+            context.lineWidth = penWidth;
+            context.lineTo(x2, y2);
+            context.strokeStyle = color;
+            context.stroke();
+            context.closePath();
+        }
+    </script>
+</body>
+
+</html>

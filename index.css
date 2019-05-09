@@ -1,0 +1,101 @@
+.icon {
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.15em;
+    fill: currentColor;
+    overflow: hidden;
+}
+body {
+    overflow: hidden;
+}
+
+/* .icon .active {
+    fill:red;
+} */
+#canvas {
+    background-color: #ccc;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+#action {
+    position: fixed;
+    top: 10px;
+    left: 20px;
+}
+
+#action svg {
+    width: 2em;
+    height: 2em;
+    transition: all 0.3s;
+}
+
+#action .active {
+    fill: red;
+    transform: scale(1.2);
+}
+
+ul {
+    position: fixed;
+    top: 50px;
+    left: 20px;
+    list-style: none;
+}
+
+ul>li {
+    list-style: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-top: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
+    /* border:2px solid rgba(8, 8, 8, 0.5); */
+    transition: all 0.3s;
+}
+ul>#red {
+    background-color: red;
+}
+ul>#green {
+    background-color: green;
+}
+ul>#blue {
+    background-color: blue;
+}
+ul li.on {
+    transform: scale(1.2);
+}
+ol {
+    list-style: none;
+    position:fixed;
+    right:20px;
+    top:10px;
+}
+ol>li {
+    margin: 10px 0;
+}
+ol>.tin {
+    width: 20px;
+    height: 0;
+    padding-top: 3px;
+    background-color: black;
+}
+ol>.tic {
+    width: 20px;
+    height: 0;
+    padding-top: 6px;
+    background-color: black;
+}
+/* .actions>#brush {
+    display: none;
+}
+
+.actions.x>#btn {
+    display: none;
+}
+
+.actions.x>#brush {
+    display: inline-block;
+} */
